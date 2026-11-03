@@ -102,6 +102,11 @@ public class Shop {
 		// load inventory from external data
 		shop.loadInventory();
 		
+		// Mostrar inventario automáticamente al arrancar para comprobación
+		System.out.println("\n--- INVENTARIO CARGADO AL ARRANCAR ---");
+		shop.showInventory();
+		System.out.println("---------------------------------------\n");
+		
 		// init session as employee
 		shop.initSession();
 
@@ -216,36 +221,47 @@ public class Shop {
 	}
 
 	/**
-	 * read inventory from file
+	 * read inventory from file (RA1-ISSUE-03 & RA1-ISSUE-04)
 	 */
 	private void readInventory() {
-		File f = new File(System.getProperty("user.dir") + File.separator + "src" + File.separator + "model" + File.separator + "files" + File.separator + ITEMS_FILE);
-		
-		// TODO RA1-ISSUE-03: obrir el fitxer, llegir-lo linia a linia i afegir cada producte a inventory.
+		File f = new File(System.getProperty("user.dir") + File.separator + "src" + File.separator + "model" + File.separator + "files" + File.separator + ITEMS_FILE);		
 		try (BufferedReader bf = new BufferedReader(new FileReader(f))) {
 			String line;
 			while ((line = bf.readLine()) != null) {
-				// Tratar cada línea como texto (pendiente de conversión en RA1-ISSUE-04)
-				// TODO RA1-ISSUE-04: parseProductLine(line);
+				// RA1-ISSUE-04: Delegar la conversión y añadir al inventario
+				Product product = parseProductLine(line);
+				if (product != null) {
+					inventory.add(product);
+					numberProducts++;
+				}
 			}
-			System.out.println("Archivo leído correctamente línea a línea desde: " + f.getPath());
+			System.out.println("Archivo leído y cargado correctamente desde: " + f.getPath());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error al leer el archivo: " + f.getPath());
 		}
-		
-		
-		// TODO RA1-ISSUE-04: delegar la conversio de cada linia a parseProductLine.
-		// TODO RA1-ISSUE-11: tractar fitxer absent o error de lectura amb un missatge comprensible.
-		System.out.println("RA1-ISSUE-03 pendent: encara no s'ha carregat " + f.getPath());
 	}
 
 	/**
-	 * Convert a valid line from items.txt into a Product.
+	 * Convert a valid line from items.txt into a Product. (RA1-ISSUE-04)
 	 */
 	private Product parseProductLine(String line) {
-		// TODO RA1-ISSUE-04: validar camps, convertir preu i estoc, i retornar un Product.
-		// TODO RA1-ISSUE-05: decidir com es tracten les linies mal formades.
+		try {
+			// El archivo tiene un formato como: Item:SSD 1TB;Wholesaler Price:60.00;Stock:8;
+			String[] parts = line.split(";");
+			if (parts.length >= 3) {
+				String name = parts[0].replace("Item:", "").trim();
+				double priceVal = Double.parseDouble(parts[1].replace("Wholesaler Price:", "").trim());
+				Amount price = new Amount(priceVal);
+				int stock = Integer.parseInt(parts[2].replace("Stock:", "").trim());
+				
+				boolean available = stock > 0;
+				
+				return new Product(name, price, available, stock);
+			}
+		} catch (Exception e) {
+			System.out.println("Error al parsear la línea: " + line);
+		}
 		return null;
 	}
 
@@ -433,12 +449,12 @@ public class Shop {
 				for (Product product : sale.getProducts()) {
 					productLine.append(product.getName()+ "," + product.getPublicPrice()+";");
 				}
-				StringBuilder secondLine = new StringBuilder(counterSale+ ";" + "Products=" + productLine +";");						                                                
+				StringBuilder secondLine = new StringBuilder(counterSale+ ";" + "Products=" + productLine +";");						                             
 				pw.write(secondLine.toString());	
 				fw.write("\n");
 				
 				// format third line TO BE -> 1;Amount=93.60€;
-				StringBuilder thirdLine = new StringBuilder(counterSale+ ";" + "Amount=" + sale.getAmount() +";");						                                                
+				StringBuilder thirdLine = new StringBuilder(counterSale+ ";" + "Amount=" + sale.getAmount() +";");						                           
 				pw.write(thirdLine.toString());	
 				fw.write("\n");
 				
