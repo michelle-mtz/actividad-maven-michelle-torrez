@@ -285,7 +285,7 @@ public class Shop {
 	 * Save the current inventory to items.txt.
 	 */
 	public void saveInventory() {
-		// TODO RA1-ISSUE-09: convertir cada Product en una linia i reescriure items.txt.
+		// TODO RA1-ISSUE-09: convertir chaque Product en una linia i reescriure items.txt.
 		System.out.println("RA1-ISSUE-09 pendent: encara no s'ha desat l'inventari.");
 	}
 
@@ -297,11 +297,33 @@ public class Shop {
 	}
 
 	/**
-	 * add a new product to inventory getting data from console
+	 * add a new product to inventory getting data from console (RA1-ISSUE-06)
 	 */
 	public void addProduct() {
-		// TODO RA1-ISSUE-06: demanar dades minimes, crear un Product i afegir-lo a inventory.
-		System.out.println("RA1-ISSUE-06 pendent: encara no es poden afegir articles.");
+		Scanner scanner = CONSOLE;
+		System.out.println("--- Afegir nou article ---");
+		System.out.print("Introduïu el nom de l'article: ");
+		String name = scanner.next();
+		
+		System.out.print("Introduïu el preu majorista: ");
+		double priceVal = scanner.nextDouble();
+		Amount price = new Amount(priceVal);
+		
+		System.out.print("Introduïu l'estoc inicial: ");
+		int stock = scanner.nextInt();
+		
+		boolean available = stock > 0;
+		
+		Product newProduct = new Product(name, price, available, stock);
+		
+		if (isInventoryFull()) {
+			System.out.println("No es poden afegir més articles, s'ha assolit el màxim de " + inventory.size());
+			return;
+		}
+		
+		inventory.add(newProduct);
+		numberProducts++;
+		System.out.println("Article afegit correctament a l'inventari: " + newProduct);
 	}
 
 	/**
@@ -517,15 +539,19 @@ public class Shop {
 	
 
 	/**
-	 * check if inventory is full or not
+	 * status check if inventory is full or not
 	 */
 	public boolean isInventoryFull() {
 		if (numberProducts == 10) {
 			return true;
 		} else {
+			for (Product p : inventory) {
+				if (p == null) {
+					return false;
+				}
+			}
 			return false;
 		}
-
 	}
 
 	/**
