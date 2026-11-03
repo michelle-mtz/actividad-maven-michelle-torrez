@@ -95,7 +95,6 @@ public class Shop {
 		this.numberSales = numberSales;
 	}
 
-/*prueba desde casa*/
 
 	public static void main(String[] args) {
 		Shop shop = new Shop();
@@ -220,23 +219,19 @@ public class Shop {
 	 * read inventory from file
 	 */
 	private void readInventory() {
-		File f = new File(System.getProperty("user.dir") + File.separator + "files" + File.separator + ITEMS_FILE);
-
-		// Esta ruta ahora mismo no me lee y debo editarla.
+		File f = new File(System.getProperty("user.dir") + File.separator + "src" + File.separator + "model" + File.separator + "files" + File.separator + ITEMS_FILE);
 		
 		// TODO RA1-ISSUE-03: obrir el fitxer, llegir-lo linia a linia i afegir cada producte a inventory.
-		try {
-			BufferedReader bf = new BufferedReader(new FileReader(f));
-			String Linea = "";
-		//	while(Linea = bf.readLine() != null)
-		//	{
-				
-		//	}
-			
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		try (BufferedReader bf = new BufferedReader(new FileReader(f))) {
+			String line;
+			while ((line = bf.readLine()) != null) {
+				// Tratar cada línea como texto (pendiente de conversión en RA1-ISSUE-04)
+				// TODO RA1-ISSUE-04: parseProductLine(line);
+			}
+			System.out.println("Archivo leído correctamente línea a línea desde: " + f.getPath());
+		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println("Error al leer el archivo: " + f.getPath());
 		}
 		
 		
