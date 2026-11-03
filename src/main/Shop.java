@@ -223,6 +223,8 @@ public class Shop {
 	/**
 	 * read inventory from file (RA1-ISSUE-03 & RA1-ISSUE-04)
 	 */
+	
+	// TODO RA1-ISSUE-11: controlar l'absència o error de lectura del fitxer d'inventari.
 	private void readInventory() {
 		File f = new File(System.getProperty("user.dir") + File.separator + "src" + File.separator + "model" + File.separator + "files" + File.separator + ITEMS_FILE);		
 		try (BufferedReader bf = new BufferedReader(new FileReader(f))) {
@@ -235,10 +237,12 @@ public class Shop {
 					numberProducts++;
 				}
 			}
-			System.out.println("Archivo leído y cargado correctamente desde: " + f.getPath());
+			System.out.println("Arxiu llegit i carregat correctament des de: " + f.getPath());
+		} catch (FileNotFoundException e) {
+			System.out.println("\n[AVÍS] No s'ha trobat el fitxer d'inventari a:\n-> " + f.getPath() + 
+					"\nS'inicia amb un inventari buit de manera segura.\n");
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Error al leer el archivo: " + f.getPath());
+			System.out.println("Error de lectura al fitxer: " + f.getPath());
 		}
 	}
 
@@ -281,7 +285,9 @@ public class Shop {
 		return null;
 	}
 
-	// TODO RA1-ISSUE-09: convertir chaque Product en una linia i reescriure items.txt.
+	/**
+	 * Save the current inventory to items.txt.
+	 */
 	public void saveInventory() {
 		File f = new File(System.getProperty("user.dir") + File.separator + "src" + File.separator + "model" + File.separator + "files" + File.separator + ITEMS_FILE);
 		try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
