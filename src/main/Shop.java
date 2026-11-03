@@ -243,24 +243,40 @@ public class Shop {
 	}
 
 	/**
-	 * Convert a valid line from items.txt into a Product. (RA1-ISSUE-04)
+	 * Convert a valid line from items.txt into a Product with error handling for malformed lines. (RA1-ISSUE-05)
 	 */
 	private Product parseProductLine(String line) {
+		if (line == null || line.trim().isEmpty()) {
+			return null;
+		}
+		
 		try {
 			// El archivo tiene un formato como: Item:SSD 1TB;Wholesaler Price:60.00;Stock:8;
 			String[] parts = line.split(";");
-			if (parts.length >= 3) {
-				String name = parts[0].replace("Item:", "").trim();
-				double priceVal = Double.parseDouble(parts[1].replace("Wholesaler Price:", "").trim());
-				Amount price = new Amount(priceVal);
-				int stock = Integer.parseInt(parts[2].replace("Stock:", "").trim());
-				
-				boolean available = stock > 0;
-				
-				return new Product(name, price, available, stock);
+			if (parts.length < 3) {
+				System.out.println("Línea mal formada (faltan campos): " + line);
+				return null;
 			}
+			
+			String name = parts[0].replace("Item:", "").trim();
+			if (name.isEmpty()) {
+				System.out.println("Línea mal formada (nombre vacío): " + line);
+				return null;
+			}
+			
+			double priceVal = Double.parseDouble(parts[1].replace("Wholesaler Price:", "").trim());
+			Amount price = new Amount(priceVal);
+			
+			int stock = Integer.parseInt(parts[2].replace("Stock:", "").trim());
+			
+			boolean available = stock > 0;
+			
+			return new Product(name, price, available, stock);
+			
+		} catch (NumberFormatException e) {
+			System.out.println("Error de formato numérico en la línea (campo inválido): " + line);
 		} catch (Exception e) {
-			System.out.println("Error al parsear la línea: " + line);
+			System.out.println("Error al procesar la línea: " + line);
 		}
 		return null;
 	}
