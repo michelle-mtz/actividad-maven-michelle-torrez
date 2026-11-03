@@ -302,8 +302,9 @@ public class Shop {
 	public void addProduct() {
 		Scanner scanner = CONSOLE;
 		System.out.println("--- Afegir nou article ---");
+		scanner.nextLine(); // Limpiar búfer
 		System.out.print("Introduïu el nom de l'article: ");
-		String name = scanner.next();
+		String name = scanner.nextLine();
 		
 		System.out.print("Introduïu el preu majorista: ");
 		double priceVal = scanner.nextDouble();
@@ -334,12 +335,26 @@ public class Shop {
 		System.out.println("RA1-ISSUE-08 pendent: encara no es poden eliminar articles.");
 	}
 
-	/**
-	 * add stock for a specific product
-	 */
+	// TODO RA1-ISSUE-07: trobar un Product i actualitzar el seu estoc.
 	public void addStock() {
-		// TODO RA1-ISSUE-07: trobar un Product i actualitzar el seu estoc.
-		System.out.println("RA1-ISSUE-07 pendent: encara no es pot modificar l'estoc.");
+		Scanner scanner = CONSOLE;
+		scanner.nextLine(); // Limpiar el salto de línea pendiente
+		System.out.print("Seleccioneu un nom d'article: ");
+		String name = scanner.nextLine();
+
+		Product product = findProduct(name);
+
+		if (product != null) {
+			System.out.print("Introduïu la quantitat d'estoc a afegir: ");
+			int quantity = scanner.nextInt();
+			product.setStock(product.getStock() + quantity);
+			if (product.getStock() > 0) {
+				product.setAvailable(true);
+			}
+			System.out.println("L'estoc de l'article " + name + " s'ha actualitzat correctament. Nou estoc: " + product.getStock());
+		} else {
+			System.out.println("Article no trobat.");
+		}
 	}
 
 	/**
@@ -347,8 +362,9 @@ public class Shop {
 	 */
 	private void setExpired() {
 		Scanner scanner = CONSOLE;
+		scanner.nextLine(); // Limpiar búfer
 		System.out.print("Seleccioneu un nom d'article: ");
-		String name = scanner.next();
+		String name = scanner.nextLine();
 
 		Product product = findProduct(name);
 
@@ -381,7 +397,6 @@ public class Shop {
 		Client client = new Client(nameClient);
 
 		// sale product until input name is not 0
-		// Product[] shoppingCart = new Product[10];
 		ArrayList<Product> shoppingCart = new ArrayList<Product>();
 		int numberShopping = 0;
 
@@ -429,7 +444,6 @@ public class Shop {
 
 		// add to shop
 		sales.add(sale);
-//		numberSales++;
 
 		// add to cash
 		cash.setValue(cash.getValue() + totalAmount.getValue());
@@ -529,7 +543,8 @@ public class Shop {
 	 */
 	public void addProduct(Product product) {
 		if (isInventoryFull()) {
-			System.out.println("No es poden afegir més articles, s'ha assolit el màxim de " + inventory.size());
+			String msg = "No es poden afegir més articles, s'ha assolit el màxim de " + inventory.size();
+			System.out.println(msg);
 			return;
 		}
 		inventory.add(product);
