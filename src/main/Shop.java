@@ -95,7 +95,7 @@ public class Shop {
 		this.numberSales = numberSales;
 	}
 
-
+/*prueba desde casa*/
 
 	public static void main(String[] args) {
 		Shop shop = new Shop();
