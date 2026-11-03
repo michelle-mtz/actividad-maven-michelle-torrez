@@ -327,12 +327,22 @@ public class Shop {
 		System.out.println("Article afegit correctament a l'inventari: " + newProduct);
 	}
 
-	/**
-	 * remove a new product to inventory getting data from console
-	 */
+	// TODO RA1-ISSUE-08: retirar un Product de inventory sense alterar la resta.
 	public void removeProduct() {
-		// TODO RA1-ISSUE-08: retirar un Product de inventory sense alterar la resta.
-		System.out.println("RA1-ISSUE-08 pendent: encara no es poden eliminar articles.");
+		Scanner scanner = CONSOLE;
+		scanner.nextLine(); // Limpiar el salto de línea pendiente
+		System.out.print("Seleccioneu un nom d'article a eliminar: ");
+		String name = scanner.nextLine();
+
+		Product product = findProduct(name);
+
+		if (product != null) {
+			inventory.remove(product);
+			numberProducts--;
+			System.out.println("L'article " + name + " s'ha eliminat correctament de l'inventari.");
+		} else {
+			System.out.println("Article no trobat.");
+		}
 	}
 
 	// TODO RA1-ISSUE-07: trobar un Product i actualitzar el seu estoc.
